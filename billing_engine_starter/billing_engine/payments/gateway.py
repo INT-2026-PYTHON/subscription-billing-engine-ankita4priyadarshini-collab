@@ -42,11 +42,19 @@ class ScriptedGateway(PaymentGateway):
 
     def __init__(self, results: list[PaymentResult]) -> None:
         # TODO Day 3
-        raise NotImplementedError("Day 3: implement ScriptedGateway.__init__")
+        # raise NotImplementedError("Day 3: implement ScriptedGateway.__init__")
+        self._results = list(results)
+        self._index = 0
+
 
     def charge(self, invoice: Invoice) -> PaymentResult:
         # TODO Day 3
-        raise NotImplementedError("Day 3: implement ScriptedGateway.charge")
+        # raise NotImplementedError("Day 3: implement ScriptedGateway.charge")
+        if self._index >= len(self._results):
+            raise RuntimeError("ScriptedGateway has no more pre-seeded results")
+        result = self._results[self._index]
+        self._index += 1
+        return result
 
 
 # ----------------------------------------------------------------
@@ -57,8 +65,15 @@ class FakeRandomGateway(PaymentGateway):
 
     def __init__(self, success_rate: float = 0.7, seed: Optional[int] = None) -> None:
         # TODO Day 3
-        raise NotImplementedError("Day 3: implement FakeRandomGateway.__init__")
+        # raise NotImplementedError("Day 3: implement FakeRandomGateway.__init__")
+        if success_rate < 0.0 or success_rate > 1.0:
+            raise ValueError("success_rate must be between 0 and 1")
+        self.success_rate = success_rate
+        self._rng = random.Random(seed)
 
     def charge(self, invoice: Invoice) -> PaymentResult:
         # TODO Day 3
-        raise NotImplementedError("Day 3: implement FakeRandomGateway.charge")
+        # raise NotImplementedError("Day 3: implement FakeRandomGateway.charge")
+        if self._rng.random() < self.success_rate:
+            return PaymentResult(success=True)
+        return PaymentResult(success=False, failure_reason="PROCESSOR_DECLINED")
